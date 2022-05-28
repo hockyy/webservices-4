@@ -13,24 +13,6 @@ app = FastAPI()
 async def pong():
     return {"ping": "pong!"}
 
-
-@app.get("/", response_model=list[Mahasiswa])
-async def get_mahasiswa(session: AsyncSession = Depends(get_session)):
-    result = await session.execute(select(Mahasiswa))
-    mahasiswa = result.scalars().all()
-    return mahasiswa
-
-
-@app.get("/{npm}", response_model=MahasiswaResponse)
-async def get_mahasiswa_npm(npm: str, session: AsyncSession = Depends(get_session)):
-
-    try:
-        result = await session.execute(select(Mahasiswa).where(Mahasiswa.npm == npm))
-        mahasiswa = result.scalars().one()
-    except:
-        mahasiswa = MahasiswaResponse(status="Not Found", npm=npm, nama="")
-    return mahasiswa
-
 @app.post("/")
 async def add_mahasiswa(mahasiswa: MahasiswaCreate, session: AsyncSession = Depends(get_session)):
     try:
