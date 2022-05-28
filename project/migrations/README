@@ -1,1 +1,9 @@
 Generic single-database configuration with an async dbapi.
+
+First time generating, `versions` folder should exist, init command
+and migrate command is the same
+
+```bash
+alembic revision — autogenerate -m “First commit”
+alembic upgrade head
+```

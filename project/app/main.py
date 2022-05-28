@@ -2,8 +2,9 @@ from fastapi import Depends, FastAPI
 from sqlalchemy.future import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.db import get_session
-from app.models import Song, SongCreate
+from db import get_session
+from models import Mahasiswa, MahasiswaCreate, MahasiswaResponse
+import uvicorn
 
 app = FastAPI()
 
@@ -13,17 +14,31 @@ async def pong():
     return {"ping": "pong!"}
 
 
-@app.get("/songs", response_model=list[Song])
-async def get_songs(session: AsyncSession = Depends(get_session)):
-    result = await session.execute(select(Song))
-    songs = result.scalars().all()
-    return [Song(name=song.name, artist=song.artist, year=song.year, id=song.id) for song in songs]
+@app.get("/", response_model=list[Mahasiswa])
+async def get_mahasiswa(session: AsyncSession = Depends(get_session)):
+    result = await session.execute(select(Mahasiswa))
+    mahasiswa = result.scalars().all()
+    return mahasiswa
 
 
-@app.post("/songs")
-async def add_song(song: SongCreate, session: AsyncSession = Depends(get_session)):
-    song = Song(name=song.name, artist=song.artist, year=song.year)
-    session.add(song)
+@app.get("/{npm}", response_model=MahasiswaResponse)
+async def get_mahasiswa_npm(npm: str, session: AsyncSession = Depends(get_session)):
+
+    try:
+        result = await session.execute(select(Mahasiswa).where(Mahasiswa.npm == npm))
+        mahasiswa = result.scalars().one()
+    except:
+        mahasiswa = MahasiswaResponse(status="Not Found", npm=npm, nama="")
+    return mahasiswa
+
+@app.post("/")
+async def add_mahasiswa(mahasiswa: MahasiswaCreate, session: AsyncSession = Depends(get_session)):
+    mahasiswa = Mahasiswa(npm=mahasiswa.npm, nama=mahasiswa.nama)
+    session.add(mahasiswa)
     await session.commit()
-    await session.refresh(song)
-    return song
+    await session.refresh(mahasiswa)
+    return mahasiswa
+
+
+if __name__ == "__main__":
+    uvicorn.run("main:app", host="127.0.0.1", port=8000, log_level="info", reload=True)

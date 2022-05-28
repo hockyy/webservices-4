@@ -8,7 +8,8 @@ from sqlmodel import SQLModel
 
 from alembic import context
 
-from app.models import Song
+# Import app models that is used in the DB
+from app.models import Mahasiswa
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
