@@ -3,7 +3,7 @@ from sqlalchemy.future import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from db import get_session
-from models import Mahasiswa, MahasiswaCreate, MahasiswaResponse
+from models import Mahasiswa, MahasiswaCreate, MahasiswaResponse, UpdateResponse
 import uvicorn
 
 app = FastAPI()
@@ -33,11 +33,14 @@ async def get_mahasiswa_npm(npm: str, session: AsyncSession = Depends(get_sessio
 
 @app.post("/")
 async def add_mahasiswa(mahasiswa: MahasiswaCreate, session: AsyncSession = Depends(get_session)):
-    mahasiswa = Mahasiswa(npm=mahasiswa.npm, nama=mahasiswa.nama)
-    session.add(mahasiswa)
-    await session.commit()
-    await session.refresh(mahasiswa)
-    return mahasiswa
+    try:
+        mahasiswa = Mahasiswa(npm=mahasiswa.npm, nama=mahasiswa.nama)
+        session.add(mahasiswa)
+        await session.commit()
+        await session.refresh(mahasiswa)
+        return UpdateResponse()
+    except Exception as e:
+        return UpdateResponse(status=f"Internal Server Error {e}")
 
 
 if __name__ == "__main__":

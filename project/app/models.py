@@ -1,5 +1,6 @@
 from typing import Optional
 
+from pydantic.main import BaseModel
 from sqlmodel import SQLModel, Field
 
 class Mahasiswa(SQLModel, table=True):
@@ -10,4 +11,7 @@ class MahasiswaCreate(Mahasiswa):
     pass
 
 class MahasiswaResponse(Mahasiswa):
+    status: str = "OK"
+
+class UpdateResponse(BaseModel):
     status: str = "OK"
