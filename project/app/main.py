@@ -31,17 +31,5 @@ async def get_mahasiswa_npm(npm: str, session: AsyncSession = Depends(get_sessio
         mahasiswa = MahasiswaResponse(status="Not Found", npm=npm, nama="")
     return mahasiswa
 
-@app.post("/")
-async def add_mahasiswa(mahasiswa: MahasiswaCreate, session: AsyncSession = Depends(get_session)):
-    try:
-        mahasiswa = Mahasiswa(npm=mahasiswa.npm, nama=mahasiswa.nama)
-        session.add(mahasiswa)
-        await session.commit()
-        await session.refresh(mahasiswa)
-        return UpdateResponse()
-    except Exception as e:
-        return UpdateResponse(status=f"Internal Server Error {e}")
-
-
 if __name__ == "__main__":
     uvicorn.run("main:app", host="127.0.0.1", port=8000, log_level="info", reload=True)
